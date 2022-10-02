@@ -137,9 +137,13 @@ class _ProductScreenState extends State<ProductScreen> {
                                             ),
                                             TextButton(
                                               onPressed: () {
+                                                // Get.find<CheckoutController>()
+                                                //     .checkoutProductList
+                                                //     .add(Get.find<
+                                                //             ProductController>()
+                                                //         .productList[index]);
                                                 Get.find<CheckoutController>()
-                                                    .checkoutProductList
-                                                    .add(Get.find<
+                                                    .saveItemToBox(Get.find<
                                                             ProductController>()
                                                         .productList[index]);
                                                 Get.snackbar('Success',

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sample_razorpay_integration/Routes/routes.dart';
+import 'package:sample_razorpay_integration/Screens/Checkout/Controller/checkout_controller.dart';
 import 'package:sample_razorpay_integration/Screens/Product/Controller/product_controller.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -55,6 +56,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   TextButton(
                     onPressed: () async {
                       Get.toNamed(checkoutScreen);
+                      Get.find<CheckoutController>().getTotalSum();
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(

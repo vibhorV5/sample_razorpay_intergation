@@ -126,7 +126,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
+                            const Text(
                               'Total Sum:',
                               style: TextStyle(
                                   fontSize: 20,
@@ -134,8 +134,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                   fontWeight: FontWeight.bold),
                             ),
                             Text(
-                              '\$500',
-                              style: TextStyle(
+                              Get.find<CheckoutController>()
+                                  .totalSum
+                                  .value
+                                  .toString(),
+                              // '\$500',
+                              style: const TextStyle(
                                   fontSize: 20,
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold),

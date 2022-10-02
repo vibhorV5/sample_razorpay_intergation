@@ -1,18 +1,48 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:sample_razorpay_integration/Models/Product/product.dart';
 
 class CheckoutController extends GetxController {
+  final box = GetStorage();
+
   RxList checkoutProductList = <Product>[].obs;
   // RxDouble totalSum = 0.0.obs;
-  double totalSum = 0;
+  RxDouble totalSum = 0.0.obs;
 
   getTotalSum() {
-    num sum = 0;
+    double sum = 0;
     for (Product i in checkoutProductList) {
       sum = sum + i.price!;
     }
-    print(sum);
+    totalSum.value = sum;
+    debugPrint('broooo = $totalSum');
+    debugPrint(sum.toString());
+  }
+
+  saveItemToBox(Product checkoutProduct) async {
+    checkoutProductList.add(checkoutProduct);
+    debugPrint('product added to checkout list = $checkoutProduct');
+    debugPrint('product list = $checkoutProductList');
+    await box.write('checkoutProductsInBox', jsonEncode(checkoutProductList));
+  }
+
+  fetchItemsfromBox() async {
+    // checkoutProductList = box.read('checkoutProductsInBox') ?? [].obs;
+    var data = await box.read('checkoutProductsInBox') ?? [];
+    List jsonData = jsonDecode(data);
+    checkoutProductList =
+        jsonData.map((item) => Product.fromJson(item)).toList().obs;
+  }
+
+  @override
+  void onInit() {
+    // TODO: implement onInit
+    super.onInit();
+    fetchItemsfromBox();
+    debugPrint(checkoutProductList.toString());
   }
 
   // getTotalSum() {
