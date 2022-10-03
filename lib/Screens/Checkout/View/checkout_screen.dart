@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:sample_razorpay_integration/Routes/routes.dart';
 import 'package:sample_razorpay_integration/Screens/Checkout/Controller/checkout_controller.dart';
+import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({super.key});
@@ -10,6 +12,71 @@ class CheckoutScreen extends StatefulWidget {
 }
 
 class _CheckoutScreenState extends State<CheckoutScreen> {
+  late Razorpay _razorpay;
+
+  @override
+  void initState() {
+    super.initState();
+    _razorpay = Razorpay();
+    _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
+    _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
+    _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _razorpay.clear();
+  }
+
+  void launchRazorpay() async {
+    var options = {
+      'key': 'rzp_test_Afbk6Y8rJy3NHQ',
+      'amount':
+          Get.find<CheckoutController>().totalSum.value.toPrecision(2) * 100,
+      'name': 'Random Company name.',
+      'description': 'Product details goes here',
+      'retry': {'enabled': true, 'max_count': 1},
+      'send_sms_hash': true,
+      'prefill': {'contact': '8888888888', 'email': 'test@razorpay.com'},
+      'external': {
+        'wallets': ['paytm']
+      }
+    };
+
+    try {
+      _razorpay.open(options);
+    } catch (e) {
+      debugPrint('Error: e');
+    }
+  }
+
+  void _handlePaymentSuccess(PaymentSuccessResponse response) {
+    print('Success Response: $response');
+    /*Fluttertoast.showToast(
+        msg: "SUCCESS: " + response.paymentId!,
+        toastLength: Toast.LENGTH_SHORT); */
+
+    Get.toNamed(orderSuccessScreen);
+  }
+
+  void _handlePaymentError(PaymentFailureResponse response) {
+    print('Error Response: $response');
+
+    Get.toNamed(orderFailureScreen);
+
+    /* Fluttertoast.showToast(
+        msg: "ERROR: " + response.code.toString() + " - " + response.message!,
+        toastLength: Toast.LENGTH_SHORT); */
+  }
+
+  void _handleExternalWallet(ExternalWalletResponse response) {
+    print('External SDK Response: $response');
+    /* Fluttertoast.showToast(
+        msg: "EXTERNAL_WALLET: " + response.walletName!,
+        toastLength: Toast.LENGTH_SHORT); */
+  }
+
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context).size;
@@ -93,7 +160,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                         ),
                                       ),
                                       Text(
-                                        'Price: \$${Get.find<CheckoutController>().checkoutProductList[index].price.toString()}',
+                                        'Price: ₹${Get.find<CheckoutController>().checkoutProductList[index].price.toString()}',
                                       ),
                                     ],
                                   ),
@@ -137,6 +204,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                               Get.find<CheckoutController>()
                                   .totalSum
                                   .value
+                                  .toPrecision(2)
                                   .toString(),
                               // '\$500',
                               style: const TextStyle(
@@ -147,21 +215,33 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           ],
                         ),
                       ),
-                      TextButton(
-                          onPressed: () {
-                            Get.find<CheckoutController>().getTotalSum();
-                            // Get.find<CheckoutController>().printHello();
-                            // print(
-                            //     Get.find<CheckoutController>().totalSum.value);
-                          },
-                          child: Container(
-                            alignment: Alignment.center,
-                            height: mediaQuery.height * 0.05,
-                            width: mediaQuery.width,
-                            decoration:
-                                BoxDecoration(color: Colors.yellow.shade300),
-                            child: const Text('Proceed to Checkout'),
-                          )),
+                      Get.find<CheckoutController>().totalSum.value != 0.0
+                          ? TextButton(
+                              onPressed: () async {
+                                Get.find<CheckoutController>().getTotalSum();
+                                launchRazorpay();
+                              },
+                              child: Container(
+                                alignment: Alignment.center,
+                                height: mediaQuery.height * 0.05,
+                                width: mediaQuery.width,
+                                decoration: BoxDecoration(
+                                    color: Colors.yellow.shade300),
+                                child: const Text('Proceed to Checkout'),
+                              ))
+                          : TextButton(
+                              onPressed: () async {
+                                Get.snackbar('Failure',
+                                    'Please add products to your checkout page');
+                              },
+                              child: Container(
+                                alignment: Alignment.center,
+                                height: mediaQuery.height * 0.05,
+                                width: mediaQuery.width,
+                                decoration: BoxDecoration(color: Colors.grey),
+                                child: const Text('Proceed to Checkout'),
+                              ),
+                            ),
                     ],
                   ),
                 ),

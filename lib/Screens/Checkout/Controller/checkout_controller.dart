@@ -8,7 +8,9 @@ import 'package:sample_razorpay_integration/Models/Product/product.dart';
 class CheckoutController extends GetxController {
   final box = GetStorage();
 
-  RxList checkoutProductList = <Product>[].obs;
+  RxList<Product> checkoutProductList = <Product>[].obs;
+  // RxList<Product> productList = <Product>[].obs;
+
   // RxDouble totalSum = 0.0.obs;
   RxDouble totalSum = 0.0.obs;
 
@@ -31,7 +33,7 @@ class CheckoutController extends GetxController {
 
   fetchItemsfromBox() async {
     // checkoutProductList = box.read('checkoutProductsInBox') ?? [].obs;
-    var data = await box.read('checkoutProductsInBox') ?? [];
+    var data = await box.read('checkoutProductsInBox') ?? '';
     List jsonData = jsonDecode(data);
     checkoutProductList =
         jsonData.map((item) => Product.fromJson(item)).toList().obs;

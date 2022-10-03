@@ -1,5 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.sample_razorpay_integration">
+    <uses-permission android:name="android.permission.INTERNET"/>
    <application
         android:label="sample_razorpay_integration"
         android:name="${applicationName}"

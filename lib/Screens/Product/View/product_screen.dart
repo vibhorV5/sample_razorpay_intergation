@@ -127,7 +127,7 @@ class _ProductScreenState extends State<ProductScreen> {
                                               padding: const EdgeInsets.only(
                                                   top: 8.0),
                                               child: Text(
-                                                "Price: \$${Get.find<ProductController>().productList[index].price}"
+                                                "Price: ₹${Get.find<ProductController>().productList[index].price}"
                                                     .toString(),
                                                 style: const TextStyle(
                                                     fontSize: 10,
@@ -147,7 +147,14 @@ class _ProductScreenState extends State<ProductScreen> {
                                                             ProductController>()
                                                         .productList[index]);
                                                 Get.snackbar('Success',
-                                                    'Product has been added to your checkout page');
+                                                    'Product has been added to your checkout page',
+                                                    backgroundColor: Colors
+                                                        .white
+                                                        .withOpacity(0.7),
+                                                    snackPosition:
+                                                        SnackPosition.BOTTOM,
+                                                    duration: const Duration(
+                                                        milliseconds: 1000));
                                               },
                                               child: Container(
                                                 padding:
